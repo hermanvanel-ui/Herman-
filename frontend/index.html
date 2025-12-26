@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram MT5 Trade Copier</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Telegram → MT5 Trade Copier</h1>
+            <div class="header-status">
+                <span id="app-mode" class="badge">LOADING...</span>
+                <span id="connection-status" class="badge badge-warning">Connecting...</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Telegram Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📱 Telegram</h2>
+                    <span id="telegram-status" class="status-indicator status-unknown"></span>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Status:</span>
+                        <span id="telegram-connected" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Channel:</span>
+                        <span id="telegram-channel" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Last Message:</span>
+                        <span id="telegram-last-msg" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Last Check:</span>
+                        <span id="telegram-last-check" class="value">-</span>
+                    </div>
+                    <div id="telegram-error" class="error-message" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- MT5 Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>💹 MetaTrader 5</h2>
+                    <span id="mt5-status" class="status-indicator status-unknown"></span>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Status:</span>
+                        <span id="mt5-connected" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Account:</span>
+                        <span id="mt5-account" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Server:</span>
+                        <span id="mt5-server" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Balance:</span>
+                        <span id="mt5-balance" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Equity:</span>
+                        <span id="mt5-equity" class="value">-</span>
+                    </div>
+                    <div id="mt5-error" class="error-message" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📈 Statistics</h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Uptime:</span>
+                        <span id="app-uptime" class="value">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Total Signals:</span>
+                        <span id="total-signals" class="value">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Executed:</span>
+                        <span id="total-executed" class="value success">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Failed:</span>
+                        <span id="total-failed" class="value error">0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Success Rate:</span>
+                        <span id="success-rate" class="value">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Trades -->
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>📋 Recent Trades</h2>
+                <button id="refresh-trades" class="btn btn-small">Refresh</button>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table id="trades-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Symbol</th>
+                                <th>Direction</th>
+                                <th>Entry</th>
+                                <th>SL</th>
+                                <th>TP</th>
+                                <th>Status</th>
+                                <th>Ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trades-body">
+                            <tr>
+                                <td colspan="9" class="text-center">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Errors -->
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>⚠️ Recent Errors</h2>
+            </div>
+            <div class="card-body">
+                <div id="errors-list" class="errors-list">
+                    <p class="text-muted">No errors</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Open Positions -->
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>💼 Open Positions</h2>
+                <button id="refresh-positions" class="btn btn-small">Refresh</button>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table id="positions-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th>Symbol</th>
+                                <th>Type</th>
+                                <th>Volume</th>
+                                <th>Open Price</th>
+                                <th>SL</th>
+                                <th>TP</th>
+                                <th>Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positions-body">
+                            <tr>
+                                <td colspan="8" class="text-center">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Telegram MT5 Trade Copier v1.0 | Last updated: <span id="last-update">-</span></p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+# Environment
+.env
+*.env.local
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Data
+data/*.db
+data/*.db-journal
+logs/*.log
+*.session
+*.session-journal
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+secrets/
+credentials/
+*.key
+*.pem
