@@ -1,0 +1,26 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test files
+test-files/
+sample-images/
+sample-videos/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+
+# CSV exports (optional - uncomment if you don't want to track exports)
+# *.csv
