@@ -1,0 +1,35 @@
+# Configuration Netlify pour le site PC Professionnel
+
+[build]
+  # Pas de build nécessaire car c'est un site statique
+  publish = "."
+
+# Redirection par défaut vers index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# En-têtes de sécurité
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Sécurité
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Cache pour les assets statiques
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    # Pas de cache pour les pages HTML
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Configuration des formulaires Netlify
+# Les formulaires sont automatiquement détectés via l'attribut data-netlify="true"
+# Vous pouvez configurer les notifications dans le dashboard Netlify :
+# Settings > Forms > Form notifications
