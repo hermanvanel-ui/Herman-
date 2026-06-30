@@ -3,19 +3,24 @@
 # Setup script for the "claudeverstradingview" MCP server on macOS.
 #
 # What it does:
-#   1. Clones hermanvanel-ui/claudeverstradingview into ~/claudeverstradingview
-#      (or pulls the latest if the directory already exists).
-#   2. Runs `npm install` in that directory.
+#   1. Provisions the project at ~/claudeverstradingview from one of:
+#        - a local zip:  --zip <path>      (e.g. a download from GitHub)
+#        - a git repo:   --repo <url>      (default: $REPO_URL below)
+#        - already-extracted directory: skipped automatically
+#   2. Runs `npm install`.
 #   3. Merges the MCP server entry into ~/.claude/.mcp.json without
 #      overwriting any existing servers. A timestamped backup is created
 #      before any modification.
 #   4. Copies rules.example.json to rules.json (only if rules.json does
 #      not already exist) and opens it in the default editor.
-#   5. Prints next-step instructions (restart Claude Code + run
+#   5. Prints next-step instructions (launch TradingView with
+#      --remote-debugging-port=9222, restart Claude Code, run
 #      tv_health_check).
 #
-# Run from your Mac:
+# Usage:
 #     bash scripts/setup-tradingview-mcp.sh
+#     bash scripts/setup-tradingview-mcp.sh --zip ~/Downloads/claudeverstradingview-main.zip
+#     bash scripts/setup-tradingview-mcp.sh --repo https://github.com/owner/repo.git
 #
 # The script is idempotent: re-running it is safe.
 
@@ -26,20 +31,59 @@ TARGET_DIR="${HOME}/claudeverstradingview"
 MCP_FILE="${HOME}/.claude/.mcp.json"
 SERVER_NAME="claudeverstradingview"
 SERVER_ENTRYPOINT="${TARGET_DIR}/src/server.js"
+SOURCE_ZIP=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --zip)  SOURCE_ZIP="${2:?--zip needs a path}"; shift 2;;
+    --repo) REPO_URL="${2:?--repo needs a url}"; shift 2;;
+    --dir)  TARGET_DIR="${2:?--dir needs a path}"; SERVER_ENTRYPOINT="${TARGET_DIR}/src/server.js"; shift 2;;
+    -h|--help)
+      sed -n '2,28p' "$0"; exit 0;;
+    *) echo "Unknown option: $1" >&2; exit 2;;
+  esac
+done
 
 log()  { printf '\033[1;34m[setup]\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[warn]\033[0m  %s\n' "$*" >&2; }
 die()  { printf '\033[1;31m[error]\033[0m %s\n' "$*" >&2; exit 1; }
 
-command -v git  >/dev/null 2>&1 || die "git is required but not installed."
 command -v node >/dev/null 2>&1 || die "node is required but not installed."
 command -v npm  >/dev/null 2>&1 || die "npm is required but not installed."
+if [ -z "${SOURCE_ZIP}" ] && [ ! -f "${TARGET_DIR}/package.json" ]; then
+  command -v git >/dev/null 2>&1 || die "git is required when --zip is not used."
+fi
 
-# ---- 1. Clone (or update) the repo -----------------------------------------
+# ---- 1. Provision the project at TARGET_DIR --------------------------------
 
-if [ -d "${TARGET_DIR}/.git" ]; then
-  log "Repo already present at ${TARGET_DIR} — pulling latest."
-  git -C "${TARGET_DIR}" pull --ff-only
+if [ -f "${TARGET_DIR}/package.json" ]; then
+  log "Project already present at ${TARGET_DIR} — skipping fetch."
+  if [ -d "${TARGET_DIR}/.git" ] && [ -z "${SOURCE_ZIP}" ]; then
+    log "Pulling latest from origin."
+    git -C "${TARGET_DIR}" pull --ff-only || warn "git pull failed (continuing)."
+  fi
+elif [ -n "${SOURCE_ZIP}" ]; then
+  command -v unzip >/dev/null 2>&1 || die "unzip is required to use --zip."
+  [ -f "${SOURCE_ZIP}" ] || die "Zip not found: ${SOURCE_ZIP}"
+
+  log "Extracting ${SOURCE_ZIP} -> ${TARGET_DIR}"
+  STAGING="$(mktemp -d)"
+  trap 'rm -rf "${STAGING}"' EXIT
+  unzip -q "${SOURCE_ZIP}" -d "${STAGING}"
+
+  # Most GitHub zips wrap everything in a single top-level dir (e.g.
+  # "claudeverstradingview-main/"). Detect and unwrap it.
+  ENTRIES=( "${STAGING}"/* )
+  if [ "${#ENTRIES[@]}" -eq 1 ] && [ -d "${ENTRIES[0]}" ]; then
+    SRC="${ENTRIES[0]}"
+  else
+    SRC="${STAGING}"
+  fi
+  [ -f "${SRC}/package.json" ] || die "Zip does not contain a package.json at its root."
+
+  mkdir -p "${TARGET_DIR}"
+  # Copy contents (including dotfiles) without nuking unrelated files.
+  cp -R "${SRC}/." "${TARGET_DIR}/"
 else
   log "Cloning ${REPO_URL} into ${TARGET_DIR}"
   git clone "${REPO_URL}" "${TARGET_DIR}"
