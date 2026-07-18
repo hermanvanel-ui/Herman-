@@ -1,0 +1,326 @@
+<title>Formation — Trader avec le setup RM7 Order Flow</title>
+<style>
+  :root{
+    --bg:#0C0518;--bg-2:#170027;--panel:#160A26;--panel-2:#1E1033;
+    --border:#301B4A;--border-soft:#241536;
+    --ink:#ECE7F5;--ink-dim:#B4A8CE;--ink-mute:#7E7099;
+    --mint:#83E2B9;--violet:#A98BEE;--violet-deep:#815DD2;--pink:#FFBCFF;
+    --red:#FF6B6B;--blue:#7FD4FF;--amber:#E9C46A;--indigo:#4B0082;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:50rem;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;font-family:var(--sans);font-size:16px;line-height:1.62;color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1000px 560px at 84% -6%, rgba(129,93,210,.16), transparent 60%),
+      radial-gradient(820px 460px at -4% 4%, rgba(75,0,130,.18), transparent 55%),
+      var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 1.4rem}
+
+  header.hero{padding:4rem 0 2.4rem;border-bottom:1px solid var(--border-soft)}
+  .kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mint);display:flex;align-items:center;gap:.7rem;margin:0 0 1.3rem}
+  .kicker::before{content:"";width:26px;height:1px;background:var(--mint);opacity:.7}
+  h1{font-size:clamp(2rem,5.2vw,3rem);line-height:1.04;letter-spacing:-.022em;margin:0 0 1rem;font-weight:680;text-wrap:balance}
+  h1 .accent{color:var(--violet)}
+  .lede{font-size:1.06rem;color:var(--ink-dim);max-width:38rem;margin:0}
+
+  .toc{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.8rem 0 0}
+  .toc a{font-family:var(--mono);font-size:.74rem;padding:.34rem .66rem;border:1px solid var(--border);border-radius:999px;color:var(--ink-dim);text-decoration:none;transition:.15s}
+  .toc a:hover{color:var(--mint);border-color:var(--violet-deep)}
+
+  main{padding:1rem 0 4rem}
+  section{padding:2.7rem 0;border-bottom:1px solid var(--border-soft);scroll-margin-top:1rem}
+  section:last-of-type{border-bottom:0}
+  .sec-head{display:flex;gap:1rem;align-items:baseline;margin:0 0 1.4rem}
+  .sec-num{font-family:var(--mono);font-size:.8rem;color:var(--violet);min-width:2.2rem;padding-top:.35rem;letter-spacing:.08em}
+  h2{font-size:1.55rem;letter-spacing:-.014em;margin:0;font-weight:650;text-wrap:balance}
+  .sec-sub{color:var(--ink-mute);font-size:.94rem;margin:.3rem 0 0}
+  .body{padding-left:3.2rem}
+  @media(max-width:640px){.body{padding-left:0}}
+  h3{font-size:1.05rem;font-weight:620;margin:1.6rem 0 .5rem;color:var(--ink)}
+  p{margin:0 0 1rem}
+  strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.85em;background:var(--panel-2);border:1px solid var(--border-soft);border-radius:5px;padding:.05rem .34rem;color:var(--mint);white-space:nowrap}
+  ul,ol{margin:.2rem 0 1.1rem;padding-left:1.2rem;color:var(--ink-dim)}
+  li{margin:.35rem 0}li::marker{color:var(--violet)}
+
+  .tool{background:var(--panel);border:1px solid var(--border-soft);border-radius:13px;padding:1.2rem 1.3rem;margin:0 0 1rem;border-left:3px solid var(--violet-deep)}
+  .tool h3{margin:0 0 .2rem;display:flex;align-items:center;gap:.6rem}
+  .tool .role{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mint);margin:0 0 .7rem}
+  .tool p{margin:0 0 .6rem;font-size:.94rem}
+  .tool ul{margin:.3rem 0 .2rem}
+  .tool.red{border-left-color:var(--red)}
+  .tool.blue{border-left-color:var(--blue)}
+  .tool.mint{border-left-color:var(--mint)}
+  .tool.amber{border-left-color:var(--amber)}
+  .badge{font-family:var(--mono);font-size:.64rem;padding:.16rem .44rem;border-radius:5px;letter-spacing:.05em;vertical-align:middle}
+  .badge.exec{background:rgba(255,107,107,.14);color:var(--red);border:1px solid rgba(255,107,107,.3)}
+  .badge.ctx{background:rgba(169,139,238,.14);color:var(--violet);border:1px solid rgba(169,139,238,.3)}
+
+  .flow{display:flex;flex-direction:column;gap:.6rem;margin:1rem 0 1.2rem}
+  .flow-step{display:flex;gap:.9rem;align-items:flex-start;background:var(--panel);border:1px solid var(--border-soft);border-radius:11px;padding:.85rem 1rem}
+  .flow-step .tf{font-family:var(--mono);font-size:.74rem;color:var(--mint);background:var(--panel-2);border:1px solid var(--border-soft);border-radius:6px;padding:.25rem .5rem;white-space:nowrap;flex:none;min-width:4.6rem;text-align:center}
+  .flow-step .ft{font-size:.92rem;color:var(--ink-dim)}
+  .flow-step .ft b{color:var(--ink)}
+
+  .setup{background:linear-gradient(180deg,var(--panel),rgba(22,10,38,.4));border:1px solid var(--border);border-radius:13px;padding:1.3rem;margin:0 0 1.1rem}
+  .setup .stag{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);margin:0 0 .5rem}
+  .setup h3{margin:0 0 .7rem}
+  .setup .grid{display:grid;grid-template-columns:1fr;gap:.5rem;margin:.6rem 0 0}
+  .setup .row{display:flex;gap:.7rem;font-size:.9rem}
+  .setup .row .lab{font-family:var(--mono);font-size:.72rem;color:var(--violet);min-width:5.5rem;flex:none;padding-top:.15rem}
+  .setup .row .val{color:var(--ink-dim)}
+  .setup .row .val b{color:var(--ink)}
+
+  .note{border-radius:11px;padding:1rem 1.15rem;margin:1.2rem 0;font-size:.92rem;color:var(--ink-dim)}
+  .note .lbl{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:.35rem}
+  .note.warn{background:linear-gradient(180deg,rgba(233,196,106,.11),rgba(233,196,106,.02));border:1px solid rgba(233,196,106,.3)}
+  .note.warn .lbl{color:var(--amber)}
+  .note.danger{background:linear-gradient(180deg,rgba(255,107,107,.12),rgba(255,107,107,.03));border:1px solid rgba(255,107,107,.32)}
+  .note.danger .lbl{color:var(--red)}
+  .note.tip{background:linear-gradient(180deg,rgba(131,226,185,.1),rgba(131,226,185,.02));border:1px solid rgba(131,226,185,.28)}
+  .note.tip .lbl{color:var(--mint)}
+  .note b{color:var(--ink)}
+
+  .rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.7rem;margin:.4rem 0 0}
+  .rule{background:var(--panel);border:1px solid var(--border-soft);border-radius:11px;padding:.9rem 1rem}
+  .rule .rn{font-family:var(--mono);font-size:.7rem;color:var(--violet)}
+  .rule h4{margin:.2rem 0 .3rem;font-size:.98rem}
+  .rule p{margin:0;font-size:.85rem;color:var(--ink-mute);line-height:1.5}
+
+  .checklist{list-style:none;padding:0;margin:.4rem 0 0;display:flex;flex-direction:column;gap:.5rem}
+  .checklist li{display:flex;gap:.7rem;align-items:flex-start;background:var(--panel);border:1px solid var(--border-soft);border-radius:10px;padding:.7rem .9rem;font-size:.93rem;color:var(--ink-dim)}
+  .checklist li::before{content:"✓";color:var(--mint);font-weight:700;flex:none}
+
+  footer{padding:2.4rem 0 3rem;color:var(--ink-mute);font-size:.82rem}
+  footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}
+  .brand-dot{color:var(--mint)}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Formation · Order Flow avec le setup RM7</p>
+    <h1>Trader avec ton <span class="accent">footprint, ta heatmap</span> et tes indicateurs</h1>
+    <p class="lede">Comment lire chaque outil que tu viens d'installer, comment ils se combinent, des setups concrets — et surtout comment gérer ton risque pour survivre.</p>
+    <nav class="toc">
+      <a href="#s0">Avant tout</a>
+      <a href="#s1">La logique</a>
+      <a href="#s2">Lire les outils</a>
+      <a href="#s3">Concepts order flow</a>
+      <a href="#s4">Setups de trade</a>
+      <a href="#s5">Risque &amp; brackets</a>
+      <a href="#s6">S'entraîner</a>
+      <a href="#s7">Checklist</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 0 -->
+  <section id="s0">
+    <div class="sec-head"><span class="sec-num">00</span><div><h2>À lire avant tout</h2><p class="sec-sub">Le cadre mental. Ne saute pas cette partie.</p></div></div>
+    <div class="body">
+      <p>Ce que tu as monté est un setup de <strong>day trading / scalping order flow sur futures</strong>. C'est puissant, mais c'est aussi l'un des styles les <strong>plus difficiles</strong> et les plus rapides. La grande majorité des débutants perdent de l'argent au début — ce n'est pas une fatalité, c'est une raison de commencer prudemment.</p>
+      <div class="note danger">
+        <span class="lbl">Non négociable</span>
+        <b>Commence 100 % en simulé (SIM).</b> Ne mets pas un euro réel tant que tu n'es pas <b>constamment</b> profitable sur plusieurs semaines en démo. L'order flow se lit avec de l'expérience — l'écran doit devenir une seconde langue. Ceci est un contenu éducatif, <b>pas un conseil financier</b> ni une promesse de gains.
+      </div>
+      <p>Trois vérités qui font la différence :</p>
+      <ul>
+        <li><strong>Le risque d'abord, le profit ensuite.</strong> Ton métier n'est pas de gagner, c'est de <em>ne pas exploser ton compte</em>. Le gain vient après.</li>
+        <li><strong>L'order flow ne prédit pas, il révèle.</strong> Il te montre qui est agressif <em>maintenant</em>. Tu réagis à ce que tu vois, tu n'imagines pas l'avenir.</li>
+        <li><strong>Un outil ne suffit jamais.</strong> Tu attends que <em>plusieurs</em> signaux pointent dans le même sens (confluence). Un footprint seul = bruit.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section id="s1">
+    <div class="sec-head"><span class="sec-num">01</span><div><h2>La logique du setup (top-down)</h2><p class="sec-sub">Chaque graphique a un rôle. Tu lis du plus lent au plus rapide.</p></div></div>
+    <div class="body">
+      <p>Tes 4 graphes flottants + le footprint + la heatmap ne servent pas à la même chose. La méthode : <strong>le contexte sur le lent, l'exécution sur le rapide.</strong></p>
+      <div class="flow">
+        <div class="flow-step"><span class="tf">15 min</span><span class="ft"><b>Le contexte.</b> Tendance (SMA 21), zones de retournement (Harmonic / Elliott), timing des cycles (Hurst). C'est ici que tu décides ton <em>biais</em> : je cherche du long ou du short ?</span></div>
+        <div class="flow-step"><span class="tf">200 tick / 1 min</span><span class="ft"><b>La décision.</b> Le footprint (Volume Imprint) te montre qui absorbe / qui pousse à un niveau précis. C'est ici que tu <em>valides</em> l'entrée.</span></div>
+        <div class="flow-step"><span class="tf">100 ms</span><span class="ft"><b>L'exécution.</b> La heatmap + les bulles te donnent le timing à la seconde : où est la liquidité, qui frappe. C'est ici que tu <em>appuies sur le bouton</em>.</span></div>
+      </div>
+      <div class="note tip"><span class="lbl">Règle d'or</span>Jamais d'entrée qui contredit le graphe du dessus. Si le 15m est haussier (prix au-dessus de la SMA 21 qui monte), tu privilégies les <b>longs</b>. On ne short pas un marché haussier juste parce qu'une bougie rouge apparaît.</div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <div class="sec-head"><span class="sec-num">02</span><div><h2>Lire chaque outil</h2><p class="sec-sub">Ce que chaque étude te dit vraiment.</p></div></div>
+    <div class="body">
+
+      <div class="tool red">
+        <h3>Volume Imprint — le footprint <span class="badge exec">exécution</span></h3>
+        <p class="role">Le cœur du setup</p>
+        <p>Chaque bougie est « ouverte » : à chaque niveau de prix tu vois le volume échangé <strong style="color:var(--red)">au bid (vendeurs agressifs, rouge)</strong> vs <strong style="color:var(--blue)">à l'ask (acheteurs agressifs, bleu)</strong>.</p>
+        <ul>
+          <li><strong>Imbalance :</strong> quand l'ask écrase le bid (ou l'inverse) à un niveau → une partie prend le contrôle. Des imbalances empilées = pression forte.</li>
+          <li><strong>Absorption :</strong> gros volume mais le prix ne bouge pas → quelqu'un « absorbe » avec des ordres limites. Souvent un signe de retournement imminent.</li>
+          <li><strong>POC (Point of Control) :</strong> le prix où le plus de volume s'est échangé → niveau d'attraction / de bataille.</li>
+        </ul>
+      </div>
+
+      <div class="tool blue">
+        <h3>Order Heatmap — la liquidité <span class="badge exec">exécution</span></h3>
+        <p class="role">Style Bookmap</p>
+        <p>Elle affiche les <strong>ordres limites en attente</strong> (la liquidité au repos) dans le temps. Plus une zone est <strong>lumineuse</strong>, plus il y a de gros ordres posés là.</p>
+        <ul>
+          <li><strong>Murs de liquidité :</strong> grosses zones brillantes = support / résistance potentiels tant qu'ils tiennent.</li>
+          <li><strong>Retrait (pulling) :</strong> un mur qui disparaît d'un coup avant que le prix l'atteigne → les gros se retirent, le prix passe souvent au travers.</li>
+          <li><strong>Iceberg :</strong> un niveau qui absorbe encore et encore alors qu'on ne voyait « rien » → ordre caché. Très fort signal.</li>
+        </ul>
+      </div>
+
+      <div class="tool amber">
+        <h3>Bid Trades — les bulles <span class="badge exec">exécution</span></h3>
+        <p class="role">Les ordres au marché exécutés</p>
+        <p>Chaque bulle = des trades agressifs qui frappent le marché. <strong>Plus la bulle est grosse, plus le trade est gros.</strong> Une rafale de grosses bulles = un acteur qui pousse fort maintenant.</p>
+      </div>
+
+      <div class="tool mint">
+        <h3>Volume + VMA <span class="badge ctx">contexte</span></h3>
+        <p>La barre de volume confirme la conviction d'un mouvement. La <strong>VMA</strong> (moyenne du volume) te donne le « normal » : un pic bien au-dessus de la VMA = événement, à surveiller.</p>
+      </div>
+
+      <div class="tool">
+        <h3>SMA 21 <span class="badge ctx">contexte</span></h3>
+        <p>Ton <strong>filtre de tendance</strong> sur le 15m. Prix au-dessus + pente qui monte → biais long. En dessous + pente qui descend → biais short. Simple, mais ça t'évite de trader à contre-sens.</p>
+      </div>
+
+      <div class="tool">
+        <h3>Harmonic · Elliott Wave · Hurst Cycles <span class="badge ctx">contexte</span></h3>
+        <p>Trois lectures de la <strong>structure</strong> sur le 15m :</p>
+        <ul>
+          <li><strong>Harmonic :</strong> figures (Gartley, Bat…) qui pointent des <em>zones de retournement</em> probables.</li>
+          <li><strong>Elliott Wave :</strong> où en est le marché dans son cycle de 5 vagues → es-tu en tendance ou en correction ?</li>
+          <li><strong>Hurst Cycles :</strong> le <em>timing</em> — quand un creux / sommet de cycle est attendu.</li>
+        </ul>
+        <p style="margin-bottom:0;color:var(--ink-mute);font-size:.88rem">Ce sont des aides à la décision, pas des vérités. Elles servent à repérer <em>où</em> chercher un trade, que l'order flow viendra ensuite confirmer ou non.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <div class="sec-head"><span class="sec-num">03</span><div><h2>Les 4 concepts qui font tout</h2><p class="sec-sub">Le vocabulaire de l'order flow. Maîtrise-les avant de trader.</p></div></div>
+    <div class="body">
+      <div class="rules">
+        <div class="rule"><div class="rn">01</div><h4>Delta</h4><p>Volume ask − volume bid. Positif = acheteurs agressifs dominent. Une <b>divergence</b> (prix baisse mais delta monte) annonce souvent un retournement.</p></div>
+        <div class="rule"><div class="rn">02</div><h4>Absorption</h4><p>Gros volume, prix immobile. Un mur limite « mange » les agressifs. Quand ils abandonnent, le prix part dans l'autre sens.</p></div>
+        <div class="rule"><div class="rn">03</div><h4>Imbalance</h4><p>Déséquilibre net bid/ask à un niveau. Empilées, elles tracent le chemin de moindre résistance.</p></div>
+        <div class="rule"><div class="rn">04</div><h4>Liquidité</h4><p>Où sont les ordres en attente (heatmap). Le prix est attiré par la liquidité et rebondit / casse sur les murs.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <div class="sec-head"><span class="sec-num">04</span><div><h2>Deux setups concrets</h2><p class="sec-sub">Comment la confluence se traduit en trade. Exemples pédagogiques.</p></div></div>
+    <div class="body">
+
+      <div class="setup">
+        <p class="stag">Setup A · Retournement sur absorption</p>
+        <h3>Le prix chute dans un support et les vendeurs s'épuisent</h3>
+        <div class="grid">
+          <div class="row"><span class="lab">Contexte 15m</span><span class="val">Prix arrive sur un <b>support</b> / une zone Harmonic ou un bas de cycle Hurst.</span></div>
+          <div class="row"><span class="lab">Heatmap</span><span class="val">Un <b>gros mur d'achat</b> (liquidité) est posé juste en dessous.</span></div>
+          <div class="row"><span class="lab">Footprint</span><span class="val">Fort volume au bid (vente) mais le prix <b>ne descend plus</b> → absorption. Puis apparition d'imbalances à l'ask.</span></div>
+          <div class="row"><span class="lab">Bulles</span><span class="val">Les grosses bulles vendeuses <b>se tarissent</b>.</span></div>
+          <div class="row"><span class="lab">Entrée</span><span class="val"><b>Long</b> quand les acheteurs reprennent (imbalance ask + delta qui tourne).</span></div>
+          <div class="row"><span class="lab">Stop</span><span class="val">Juste <b>sous le mur</b> de liquidité (s'il casse, ta thèse est fausse).</span></div>
+          <div class="row"><span class="lab">Cible</span><span class="val">La <b>prochaine zone de liquidité</b> au-dessus / le POC / la SMA.</span></div>
+        </div>
+      </div>
+
+      <div class="setup">
+        <p class="stag">Setup B · Continuation en tendance</p>
+        <h3>Marché haussier, on achète le repli</h3>
+        <div class="grid">
+          <div class="row"><span class="lab">Contexte 15m</span><span class="val">Prix <b>au-dessus de la SMA 21</b> qui monte, Elliott en vague d'impulsion.</span></div>
+          <div class="row"><span class="lab">Repli</span><span class="val">Petit pullback vers la SMA ou un POC de valeur.</span></div>
+          <div class="row"><span class="lab">Footprint</span><span class="val"><b>Imbalances acheteuses empilées</b> qui se forment dans le repli.</span></div>
+          <div class="row"><span class="lab">Heatmap</span><span class="val">Peu de liquidité vendeuse au-dessus → chemin dégagé.</span></div>
+          <div class="row"><span class="lab">Entrée</span><span class="val"><b>Long</b> sur reprise du volume acheteur (bulles + delta positif).</span></div>
+          <div class="row"><span class="lab">Stop</span><span class="val">Sous le creux du repli.</span></div>
+          <div class="row"><span class="lab">Cible</span><span class="val">Nouveau plus-haut / extension Elliott.</span></div>
+        </div>
+      </div>
+
+      <div class="note warn"><span class="lbl">À retenir</span>Ces exemples sont des <b>schémas</b>, pas des recettes magiques. Le marché ne les rejoue jamais à l'identique. Ton travail = reconnaître le <b>principe</b> (absorption, confluence) dans des habillages différents, en SIM, des centaines de fois.</div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <div class="sec-head"><span class="sec-num">05</span><div><h2>Gestion du risque &amp; tes brackets</h2><p class="sec-sub">La seule partie qui te garde en vie. Applique-la comme une loi.</p></div></div>
+    <div class="body">
+      <p>Tu as configuré 3 brackets (stratégies de sortie automatiques). Voici comment les utiliser :</p>
+      <div class="setup">
+        <div class="grid">
+          <div class="row"><span class="lab">Bracket 1</span><span class="val"><b>Tout-ou-rien.</b> 100 % de la position sur une seule cible. Simple, pour débuter.</span></div>
+          <div class="row"><span class="lab">Bracket 2</span><span class="val"><b>Cible +20 ticks.</b> Un stop + un objectif fixe. Discipline automatique.</span></div>
+          <div class="row"><span class="lab">Bracket 3</span><span class="val"><b>Sortie échelonnée :</b> 33 % rapide, 33 % à +20, 34 % à +30. Tu sécurises tôt et tu laisses courir.</span></div>
+        </div>
+      </div>
+      <p>Chaque bracket pose <strong>automatiquement ton stop et ta cible</strong> dès l'entrée. Ça t'enlève l'émotion : tu ne « déplaces » jamais ton stop pour espérer.</p>
+      <div class="rules">
+        <div class="rule"><div class="rn">R1</div><h4>Risque fixe / trade</h4><p>Décide un montant max par trade (ex. l'équivalent de X ticks) et n'en déroge jamais. Le stop du bracket t'y oblige.</p></div>
+        <div class="rule"><div class="rn">R2</div><h4>Perte journalière max</h4><p>Fixe une limite (ex. 3 trades perdants → j'arrête). Les comptes d'évaluation (prop) ont des règles strictes : respecte-les.</p></div>
+        <div class="rule"><div class="rn">R3</div><h4>Ratio ≥ 1.5</h4><p>Vise au moins 1.5× ce que tu risques. Avec un stop serré, +20/+30 ticks le permettent souvent.</p></div>
+        <div class="rule"><div class="rn">R4</div><h4>Micros d'abord</h4><p>Trade les <b>micros</b> (MES, MNQ) : même lecture, risque 10× moindre que les grands contrats.</p></div>
+      </div>
+      <div class="note danger"><span class="lbl">Le piège n°1</span>Ne <b>jamais</b> retirer ou éloigner un stop parce que « ça va revenir ». C'est ainsi qu'on transforme une petite perte prévue en catastrophe. Le stop est sacré.</div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <div class="sec-head"><span class="sec-num">06</span><div><h2>Ton plan d'entraînement</h2><p class="sec-sub">Comment progresser vraiment, sans cramer de compte.</p></div></div>
+    <div class="body">
+      <ol>
+        <li><strong>Mode Replay.</strong> MotiveWave rejoue des séances passées : tu vois le footprint et la heatmap bouger même marché fermé. <em>Entraîne ton œil</em> là-dessus des heures avant de trader en live.</li>
+        <li><strong>SIM en direct.</strong> À la réouverture (dim. soir), trade en <b>simulé</b> avec ton compte 100k. Applique un seul setup à la fois.</li>
+        <li><strong>Une seule paire au début.</strong> Concentre-toi sur <b>MES ou MNQ</b> uniquement. Apprends son « comportement ».</li>
+        <li><strong>Journal de trading.</strong> Note chaque trade : contexte, ce que tu as vu, entrée/sortie, résultat, émotion. C'est ce qui te fait progresser, pas le nombre de trades.</li>
+        <li><strong>Revue hebdo.</strong> Chaque week-end, relis ton journal : quel setup marche pour toi ? lequel te fait perdre ? Ajuste.</li>
+      </ol>
+      <div class="note tip"><span class="lbl">Objectif réaliste</span>Vise d'abord la <b>constance</b>, pas les gros gains : être légèrement positif ou à l'équilibre sur un mois de SIM est déjà une énorme réussite. La rentabilité réelle vient après la constance.</div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <div class="sec-head"><span class="sec-num">07</span><div><h2>Checklist avant chaque trade</h2><p class="sec-sub">Colle-la sur ton écran. Si un point manque : tu ne prends pas le trade.</p></div></div>
+    <div class="body">
+      <ul class="checklist">
+        <li>Le <strong>15m</strong> me donne un biais clair (SMA + structure) — long OU short, pas les deux.</li>
+        <li>Je suis sur une <strong>zone qui compte</strong> (support/résistance, mur de liquidité, POC).</li>
+        <li>Le <strong>footprint confirme</strong> : absorption ou imbalances dans mon sens.</li>
+        <li>La <strong>heatmap</strong> ne me met pas un gros mur contraire juste devant ma cible.</li>
+        <li>Mon <strong>stop est défini</strong> (bracket posé) et le risque est acceptable.</li>
+        <li>Ma <strong>cible offre ≥ 1.5×</strong> mon risque.</li>
+        <li>Je n'ai pas atteint ma <strong>perte journalière max</strong>.</li>
+        <li>Je suis <strong>calme</strong> — pas en train de « me refaire » après une perte.</li>
+      </ul>
+      <div class="note warn"><span class="lbl">Rappel final</span>Contenu <b>éducatif</b> uniquement, pas un conseil en investissement. Le trading de futures comporte un risque de perte élevé, potentiellement supérieur à ton dépôt. Commence et reste en <b>SIM</b> jusqu'à preuve de constance.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><span class="brand-dot">◆</span> Formation Order Flow — setup RM7 · footprint · heatmap · Rithmic</span>
+    <span style="font-family:var(--mono)">SIM d'abord · le risque avant le gain</span>
+  </div>
+</footer>

@@ -1,0 +1,376 @@
+<title>Config manuelle MotiveWave — Template RM7 (Order Flow / Rithmic)</title>
+<style>
+  :root{
+    --bg:#0C0518;
+    --bg-chart:#170027;
+    --panel:#160A26;
+    --panel-2:#1E1033;
+    --border:#301B4A;
+    --border-soft:#241536;
+    --ink:#ECE7F5;
+    --ink-dim:#B4A8CE;
+    --ink-mute:#7E7099;
+    --mint:#83E2B9;
+    --violet:#A98BEE;
+    --violet-deep:#815DD2;
+    --pink:#FFBCFF;
+    --indigo:#4B0082;
+    --amber:#E9C46A;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --maxw:54rem;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 620px at 82% -8%, rgba(129,93,210,.17), transparent 60%),
+      radial-gradient(900px 520px at 0% 6%, rgba(75,0,130,.19), transparent 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;line-height:1.58;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 1.4rem}
+
+  /* ---- progress bar (sticky) ---- */
+  .progress-wrap{position:sticky;top:0;z-index:20;background:rgba(12,5,24,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--border-soft)}
+  .progress-inner{max-width:var(--maxw);margin:0 auto;padding:.7rem 1.4rem;display:flex;align-items:center;gap:1rem}
+  .pbar{flex:1;height:7px;border-radius:99px;background:var(--panel-2);overflow:hidden;border:1px solid var(--border-soft)}
+  .pbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet-deep),var(--mint));transition:width .4s ease}
+  .pcount{font-family:var(--mono);font-size:.8rem;color:var(--ink-dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .pcount b{color:var(--mint)}
+  .reset{font-family:var(--mono);font-size:.68rem;color:var(--ink-mute);background:none;border:1px solid var(--border-soft);border-radius:6px;padding:.28rem .5rem;cursor:pointer}
+  .reset:hover{color:var(--ink);border-color:var(--border)}
+
+  /* ---- hero ---- */
+  header.hero{padding:3.4rem 0 2rem;border-bottom:1px solid var(--border-soft)}
+  .kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mint);display:flex;align-items:center;gap:.7rem;margin:0 0 1.2rem}
+  .kicker::before{content:"";width:26px;height:1px;background:var(--mint);opacity:.7}
+  h1{font-size:clamp(1.9rem,5vw,2.8rem);line-height:1.05;letter-spacing:-.022em;margin:0 0 .9rem;font-weight:680;text-wrap:balance}
+  h1 .accent{color:var(--violet)}
+  .lede{font-size:1.03rem;color:var(--ink-dim);max-width:40rem;margin:0 0 1.5rem}
+  .meta-row{display:flex;flex-wrap:wrap;gap:.5rem}
+  .chip{font-family:var(--mono);font-size:.73rem;padding:.32rem .62rem;border:1px solid var(--border);border-radius:999px;color:var(--ink-dim);background:rgba(255,255,255,.014)}
+  .chip b{color:var(--mint);font-weight:600}
+
+  main{padding:.5rem 0 3rem}
+
+  /* ---- phase ---- */
+  .phase{border-bottom:1px solid var(--border-soft)}
+  .phase-head{display:flex;gap:1rem;align-items:center;padding:1.7rem 0 1.2rem;cursor:pointer;user-select:none}
+  .phase-head:hover .ph-title{color:#fff}
+  .ph-num{font-family:var(--mono);font-size:.82rem;color:var(--violet);min-width:2.4rem;letter-spacing:.06em}
+  .ph-title{font-size:1.28rem;font-weight:640;letter-spacing:-.01em;margin:0;flex:1;text-wrap:balance;transition:color .2s}
+  .ph-done{font-family:var(--mono);font-size:.72rem;color:var(--ink-mute);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ph-done.complete{color:var(--mint)}
+  .caret{color:var(--ink-mute);transition:transform .25s;flex:none}
+  .phase.collapsed .caret{transform:rotate(-90deg)}
+  .phase-body{padding:0 0 1.6rem;overflow:hidden}
+  .phase.collapsed .phase-body{display:none}
+  .ph-sub{color:var(--ink-mute);font-size:.92rem;margin:-.4rem 0 1.1rem;padding-left:3.4rem}
+  @media(max-width:640px){.ph-sub{padding-left:0}}
+
+  /* ---- checklist ---- */
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem}
+  .step{display:flex;gap:.8rem;align-items:flex-start;background:var(--panel);border:1px solid var(--border-soft);border-radius:11px;padding:.85rem .95rem;transition:border-color .2s,background .2s}
+  .step:hover{border-color:var(--border)}
+  .step.checked{background:rgba(131,226,185,.045);border-color:rgba(131,226,185,.22)}
+  .step.checked .s-text{color:var(--ink-mute)}
+  .step.checked .s-text strong{color:var(--ink-dim)}
+  .cbox{appearance:none;-webkit-appearance:none;flex:none;width:1.35rem;height:1.35rem;margin-top:.1rem;border:1.5px solid var(--border);border-radius:6px;background:var(--panel-2);cursor:pointer;position:relative;transition:.15s}
+  .cbox:hover{border-color:var(--violet)}
+  .cbox:checked{background:var(--mint);border-color:var(--mint)}
+  .cbox:checked::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #0C0518;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+  .cbox:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+  .s-text{flex:1;font-size:.95rem;color:var(--ink-dim)}
+  .s-text strong{color:var(--ink);font-weight:600}
+  .path{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.3rem;font-family:var(--mono);font-size:.78rem;color:var(--violet);background:var(--panel-2);border:1px solid var(--border-soft);border-radius:6px;padding:.12rem .45rem;margin:.15rem .2rem}
+  .path .sep{color:var(--ink-mute)}
+  code,.k{font-family:var(--mono);font-size:.85em;background:var(--panel-2);border:1px solid var(--border-soft);border-radius:5px;padding:.05rem .34rem;color:var(--mint);white-space:nowrap}
+  .s-text .hint{display:block;margin-top:.35rem;font-size:.83rem;color:var(--ink-mute)}
+
+  /* value tables inside steps */
+  .mini{width:100%;border-collapse:collapse;margin:.5rem 0 .1rem;font-size:.83rem}
+  .mini td{padding:.28rem .5rem;border-bottom:1px solid var(--border-soft)}
+  .mini td:first-child{color:var(--ink-mute);white-space:nowrap}
+  .mini td:last-child{font-family:var(--mono);color:var(--ink-dim);text-align:right;font-variant-numeric:tabular-nums}
+  .mini tr:last-child td{border-bottom:0}
+  .sw-dot{display:inline-block;width:.85rem;height:.85rem;border-radius:3px;vertical-align:-2px;margin-right:.4rem;border:1px solid rgba(255,255,255,.25)}
+  .sym{font-family:var(--mono);font-size:.82rem;color:var(--mint);line-height:1.7}
+
+  .note{background:linear-gradient(180deg,rgba(129,93,210,.10),rgba(129,93,210,.03));border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin:1rem 0 0;font-size:.9rem;color:var(--ink-dim)}
+  .note.warn{background:linear-gradient(180deg,rgba(233,196,106,.10),rgba(233,196,106,.02));border-color:rgba(233,196,106,.28)}
+  .note .lbl{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);display:block;margin-bottom:.3rem}
+  .note.warn .lbl{color:var(--amber)}
+  .note b{color:var(--ink)}
+
+  footer{padding:2.2rem 0 3rem;color:var(--ink-mute);font-size:.8rem}
+  footer .wrap{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}
+  .brand-dot{color:var(--mint)}
+  .done-banner{margin:1.4rem 0 0;padding:1.1rem 1.2rem;border-radius:12px;text-align:center;background:linear-gradient(180deg,rgba(131,226,185,.14),rgba(131,226,185,.04));border:1px solid rgba(131,226,185,.3);color:var(--mint);font-weight:600;display:none}
+  .done-banner.show{display:block}
+</style>
+
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <div class="pbar"><span id="pfill"></span></div>
+    <div class="pcount"><b id="pdone">0</b>/<span id="ptot">0</span> · <span id="ppct">0%</span></div>
+    <button class="reset" id="resetBtn" type="button">Réinitialiser</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">MotiveWave · Configuration manuelle</p>
+    <h1>Recréer le template <span class="accent">RM7 Order Flow</span>, paramètre par paramètre</h1>
+    <p class="lede">Chaque réglage dans l'ordre où le faire dans MotiveWave, avec le chemin de menu et la valeur exacte. Coche au fur et à mesure — ta progression est sauvegardée dans ce navigateur.</p>
+    <div class="meta-row">
+      <span class="chip">9 phases</span>
+      <span class="chip">Feed <b>Rithmic</b></span>
+      <span class="chip">Tick <b>200</b></span>
+      <span class="chip">Thème <b>RM7</b></span>
+    </div>
+    <div class="note warn" style="margin-top:1.4rem">
+      <span class="lbl">Avant de commencer</span>
+      Les noms de menus peuvent varier d'une version à l'autre. Si un intitulé diffère un peu, repère la <b>fonction</b> décrite. Fais les phases <b>dans l'ordre</b> : le thème et les études doivent exister avant de monter les pages.
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+
+  <!-- ============ PHASE 1 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">01</span><h2 class="ph-title">Connexion &amp; compte</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Sans le feed temps réel, aucun tick ni order flow. On branche Rithmic et on crée le compte simulé.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p1a"><div class="s-text"><strong>Connecter Rithmic.</strong> Sur la Console : <span class="path">New Connection <span class="sep">›</span> Rithmic</span> puis choisis le gateway de ton trial (<code>Rithmic Paper Trading</code> ou <code>Rithmic Test</code>) et saisis username / password.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p1b"><div class="s-text"><strong>Accepter les Market Data Agreements.</strong> Coche les bourses <code>CME · CBOT · NYMEX · COMEX</code> en <code>Non-Professional</code>. <span class="hint">Sans ça : pas de temps réel → tick impossible.</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p1c"><div class="s-text"><strong>Créer le compte simulé.</strong> <span class="path">Configure <span class="sep">›</span> Accounts <span class="sep">›</span> Simulated <span class="sep">›</span> New</span>
+        <table class="mini"><tbody>
+          <tr><td>Nom</td><td>simulated</td></tr>
+          <tr><td>Cash de départ</td><td>100 000 USD</td></tr>
+          <tr><td>Inclure commissions</td><td>Oui</td></tr>
+          <tr><td>Remplissage marché immédiat</td><td>Oui</td></tr>
+        </tbody></table>
+      </div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 2 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">02</span><h2 class="ph-title">Thème « RM7 »</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Fond violet nuit, bougies menthe / violet. Le cœur de l'identité — à faire avant les charts.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p2a"><div class="s-text"><strong>Ouvrir l'éditeur de thèmes.</strong> <span class="path">Configure <span class="sep">›</span> Preferences <span class="sep">›</span> Themes</span> → crée un nouveau thème nommé <code>RM7</code>. Fenêtre en mode <code>Dark</code>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p2b"><div class="s-text"><strong>Couleurs du graphique</strong> (onglet Chart) :
+        <table class="mini"><tbody>
+          <tr><td><span class="sw-dot" style="background:#170027"></span>Fond</td><td>#170027</td></tr>
+          <tr><td><span class="sw-dot" style="background:#414141"></span>Grille</td><td>#414141</td></tr>
+          <tr><td><span class="sw-dot" style="background:#2D2D2D"></span>Ligne d'axe</td><td>#2D2D2D</td></tr>
+          <tr><td><span class="sw-dot" style="background:#B4B4B4"></span>Texte des axes</td><td>#B4B4B4</td></tr>
+          <tr><td><span class="sw-dot" style="background:#C8C8C8"></span>Cross-hair</td><td>#C8C8C8</td></tr>
+          <tr><td><span class="sw-dot" style="background:#0096FF"></span>Histogramme</td><td>#0096FF</td></tr>
+        </tbody></table>
+      </div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p2c"><div class="s-text"><strong>Couleurs des bougies</strong> (onglet Bars) :
+        <table class="mini"><tbody>
+          <tr><td><span class="sw-dot" style="background:#83E2B9"></span>Hausse</td><td>#83E2B9</td></tr>
+          <tr><td><span class="sw-dot" style="background:#FFFFFF"></span>Contour hausse</td><td>#FFFFFF</td></tr>
+          <tr><td><span class="sw-dot" style="background:#815DD2"></span>Baisse</td><td>#815DD2</td></tr>
+          <tr><td><span class="sw-dot" style="background:#FFBCFF"></span>Contour baisse</td><td>#FFBCFF</td></tr>
+          <tr><td><span class="sw-dot" style="background:#C8C8AA"></span>Neutre</td><td>#C8C8AA</td></tr>
+          <tr><td><span class="sw-dot" style="background:#96BEFF"></span>Outside bar</td><td>#96BEFF</td></tr>
+        </tbody></table>
+        <span class="hint">Opacité des remplissages (fill) : ~82 % (valeur alpha 210).</span>
+      </div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p2d"><div class="s-text"><strong>Définir RM7 comme thème par défaut</strong> et l'appliquer aux graphiques (Chart theme + Bar theme = <code>RM7</code>).</div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 3 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">03</span><h2 class="ph-title">Intervalles &amp; tick charts</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Le graph par défaut est en 200 ticks. On règle le tick et on recrée le sélecteur d'intervalles.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p3a"><div class="s-text"><strong>Mettre le graph en 200 ticks.</strong> Sur un chart, ouvre le sélecteur de Bar Size → <code>Tick</code> → saisis <code>200</code>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p3b"><div class="s-text"><strong>Recréer le sélecteur d'intervalles</strong> (menu Bar Size → Edit / Configure la liste), dans cet ordre :
+        <span class="hint" style="font-family:var(--mono);color:var(--ink-dim)">1m · 5m · 10m · 15m · 20m · 30m · 45m · 1h · 2h · 6h · 1D · 1W · 1MN</span>
+      </div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p3c"><div class="s-text"><strong>Ajouter le 100 ms</strong> (pour l'order flow) : Bar Size → <code>Millisecond</code> → <code>100</code>. <span class="hint">Utile seulement pour la page Order Flow (phase 7).</span></div>
+      <div class="note"><span class="lbl">Rappel tick</span>Les barres tick / 100 ms n'existent qu'avec Rithmic connecté. Historique tick court : laisse tourner en séance pour remplir.</div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 4 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">04</span><h2 class="ph-title">Les 9 watchlists</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Une liste par groupe. Crée-la via New Watch List, puis tape les symboles. Échéance U6 = Sept 2026.</p>
+    <div class="phase-body">
+      <div class="note" style="margin:0 0 1rem"><span class="lbl">Colonnes de chaque liste</span>Bid · Ask · Last · Change · % · Open · High · Low · Close · Settle · Volume · Expiry</div>
+      <ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4a"><div class="s-text"><strong>Indices</strong> <span class="sym">ES · MES · EMD · SG · SMC · SP · YM · MYM · RTY · M2K · NQ · MNQ · NC · NKD</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4b"><div class="s-text"><strong>Energies</strong> <span class="sym">CL · MCL · SMO · BB · QM · HO · NG · MNG · QG · RB</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4c"><div class="s-text"><strong>Grains</strong> <span class="sym">ZC · XC · ZL · ZM · ZO · ZR · ZS · XK · ZW · KE · XW</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4d"><div class="s-text"><strong>Metals</strong> <span class="sym">GC · MGC · QO · HG · QC · MHG · ALI · QI · SI · SIL · PA · PL</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4e"><div class="s-text"><strong>Currencies</strong> <span class="sym">6A · 6B · 6C · 6E · 6J · 6L · 6M · 6N · 6S · M6A · M6B · M6C · M6E · M6J · M6S · DX · GE · E7</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4f"><div class="s-text"><strong>Financials</strong> <span class="sym">ZB · UB · TN · ZT · ZF · ZN · MTN · MWN · 10Y</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4g"><div class="s-text"><strong>Softs</strong> <span class="sym">CC · CT · KC · OJ · SB · LBR</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4h"><div class="s-text"><strong>Eurex</strong> <span class="sym">FDAX · FDXM · FDXS · FESX · FSXE · FGBL · FGBM · FGBS · FGBX · FESB · FSMI · FSMS</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p4i"><div class="s-text"><strong>Crypto</strong> <span class="sym">MBT · BTC · ETH · EMB</span></div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 5 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">05</span><h2 class="ph-title">Template d'études « resolve »</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Le pack VIMPRINT + SMA sauvegardé, réutilisable en un clic sur n'importe quel chart.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p5a"><div class="s-text"><strong>Ajouter VIMPRINT.</strong> Sur un chart en <code>Daily</code> : <span class="path">Study <span class="sep">›</span> Add Study <span class="sep">›</span> Volume Imprint</span>
+        <table class="mini"><tbody>
+          <tr><td><span class="sw-dot" style="background:#FF5A5A"></span>Bid</td><td>#FF5A5A</td></tr>
+          <tr><td><span class="sw-dot" style="background:#B4E6FF"></span>Ask</td><td>#B4E6FF</td></tr>
+          <tr><td>Bid/Ask levels</td><td>activé</td></tr>
+          <tr><td>Imprint count</td><td>10</td></tr>
+          <tr><td>Calc on close</td><td>non</td></tr>
+        </tbody></table>
+      </div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p5b"><div class="s-text"><strong>Ajouter SMA.</strong> <span class="path">Study <span class="sep">›</span> Add Study <span class="sep">›</span> SMA</span> → Période <code>21</code>, ligne verte <code>#00FF00</code>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p5c"><div class="s-text"><strong>Sauvegarder le template.</strong> <span class="path">Study <span class="sep">›</span> Templates <span class="sep">›</span> Save As</span> → nomme-le <code>resolve</code>.</div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 6 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">06</span><h2 class="ph-title">Les 8 pages de la Console</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Chaque page = un onglet. Bouton « + » de la Console → choisis le type, puis agence les panneaux.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6a"><div class="s-text"><strong>Home</strong> <code>type Chart</code> — split : en haut chart <span class="sym">NQ</span> 200T (applique le template <code>resolve</code>, DOM affiché) ; en bas la watchlist <b>Indices</b> + panneaux Ordres / Positions / Compte.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6b"><div class="s-text"><strong>Order Flow</strong> <code>type Chart</code> — chart <span class="sym">ES</span> en <code>100 ms</code>, échelle Range 200 ticks. <span class="hint">Les études s'ajoutent en phase 7.</span></div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6c"><div class="s-text"><strong>Floating</strong> <code>type Floating</code> — 4 fenêtres flottantes <span class="sym">ES</span> (voir phase 7 pour leurs études).</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6d"><div class="s-text"><strong>Account</strong> <code>type Account</code> — panneaux Comptes · Ordres · Positions &amp; Exécutions.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6e"><div class="s-text"><strong>Trade Report</strong> <code>type Account</code> — panneau Trade Report du compte.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6f"><div class="s-text"><strong>Options</strong> <code>type Option</code> — deux Option Chains côte à côte.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6g"><div class="s-text"><strong>Scan</strong> <code>type Scan</code> — deux scanners + un chart <span class="sym">ES</span>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p6h"><div class="s-text"><strong>Optimize</strong> <code>type Optimize</code> — l'optimiseur de stratégie.</div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 7 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">07</span><h2 class="ph-title">Études order flow &amp; floating</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Les indicateurs spécifiques de chaque page. Ajoute-les via Study › Add Study sur le bon chart.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p7a"><div class="s-text"><strong>Order Flow → Order Heatmap.</strong> Sur le chart ES 100 ms : ajoute <b>Order Heatmap</b> (<code>maxHistory 1000</code>).</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p7b"><div class="s-text"><strong>Order Flow → Bid Trades.</strong> Ajoute <b>Bid Trades</b> (bulles) : <code>aggPeriod 10</code>, taille max bulle <code>60</code>, opacité <code>~0.8</code>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p7c"><div class="s-text"><strong>Floating #1</strong> — ES <code>15m</code> : Volume (bas) + <b>Harmonic</b>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p7d"><div class="s-text"><strong>Floating #2</strong> — ES <code>15m</code> : Volume + VMA + <b>Hurst Cycles</b>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p7e"><div class="s-text"><strong>Floating #3</strong> — ES <code>15m</code> : Volume + <b>Elliott Wave</b>.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p7f"><div class="s-text"><strong>Floating #4</strong> — ES <code>1m</code> : <b>VIMPRINT footprint</b> mode bid/ask, échelle Range 30 ticks.</div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 8 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">08</span><h2 class="ph-title">Ordres, sorties &amp; barres d'outils</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">Les réglages de trading et l'interface, pour un rendu 100 % identique.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p8a"><div class="s-text"><strong>Stratégies de sortie (brackets).</strong> <span class="path">Configure <span class="sep">›</span> Exit Strategies</span>
+        <table class="mini"><tbody>
+          <tr><td>Bracket 1</td><td>100 % position</td></tr>
+          <tr><td>Bracket 2</td><td>target +20 ticks</td></tr>
+          <tr><td>Bracket 3</td><td>33% · 33%@+20 · 34%@+30</td></tr>
+        </tbody></table>
+      </div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p8b"><div class="s-text"><strong>Presets d'ordres.</strong> Type <code>LMT</code> par défaut, offsets <code>10 ticks</code> (limit / stop / trail) pour les futures, trigger hors-séance activé.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p8c"><div class="s-text"><strong>Panneau de trading.</strong> Deux vues : <b>Position</b> (quantité, Buy/Sell Market/Ask/Bid, Break-Even, Reverse, P/L) et <b>Order</b> (type + P/L).</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p8d"><div class="s-text"><strong>Barres d'outils.</strong> <span class="path">Configure <span class="sep">›</span> Toolbars</span> → <b>TOP</b> active (outils + studies + DOM + order book + trade panel), <b>LEFT</b> active (dessin), et <b>TOP2 · BOTTOM · RIGHT désactivées</b>.</div></li>
+    </ul></div>
+  </section>
+
+  <!-- ============ PHASE 9 ============ -->
+  <section class="phase" data-phase>
+    <div class="phase-head"><span class="ph-num">09</span><h2 class="ph-title">Sauvegarde &amp; vérif</h2><span class="ph-done" data-done></span><span class="caret">▾</span></div>
+    <p class="ph-sub">On fige tout pour ne rien reperdre.</p>
+    <div class="phase-body"><ul class="steps">
+      <li class="step"><input type="checkbox" class="cbox" data-id="p9a"><div class="s-text"><strong>Assigner ton compte.</strong> Sur chaque chart : clic droit → <b>Account</b> → ton compte Rithmic (le template pointait vers un compte de test étranger).</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p9b"><div class="s-text"><strong>Vérifier le tick.</strong> Ouvre la page Home en séance → le 200T doit se remplir tick par tick.</div></li>
+      <li class="step"><input type="checkbox" class="cbox" data-id="p9c"><div class="s-text"><strong>Sauvegarder la workspace.</strong> <span class="path">Console <span class="sep">›</span> Save Workspace</span> — puis fais un backup (exporte le dossier de la workspace).</div></li>
+    </ul>
+    <div class="done-banner" id="doneBanner">✅ Configuration terminée — ta workspace RM7 est prête. Bon trading, Herman&nbsp;!</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><span class="brand-dot">◆</span> Décodé depuis ton export MotiveWave — thème RM7 / Rithmic / Order Flow</span>
+    <span class="mono" style="font-family:var(--mono)">config · settings · analysis</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var KEY="mw_rm7_manual_v1";
+  var boxes=Array.prototype.slice.call(document.querySelectorAll(".cbox"));
+  var pfill=document.getElementById("pfill"),pdone=document.getElementById("pdone"),
+      ptot=document.getElementById("ptot"),ppct=document.getElementById("ppct"),
+      banner=document.getElementById("doneBanner");
+  ptot.textContent=boxes.length;
+
+  function load(){
+    var s={};
+    try{s=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){s={}}
+    boxes.forEach(function(b){
+      if(s[b.dataset.id]){b.checked=true;b.closest(".step").classList.add("checked")}
+    });
+  }
+  function save(){
+    var s={};
+    boxes.forEach(function(b){if(b.checked)s[b.dataset.id]=1});
+    try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}
+  }
+  function updatePhase(phase){
+    var pb=phase.querySelectorAll(".cbox"),
+        done=phase.querySelectorAll(".cbox:checked").length,
+        el=phase.querySelector("[data-done]");
+    el.textContent=done+"/"+pb.length;
+    el.classList.toggle("complete",done===pb.length&&pb.length>0);
+  }
+  function updateAll(){
+    var done=boxes.filter(function(b){return b.checked}).length,
+        pct=boxes.length?Math.round(done/boxes.length*100):0;
+    pfill.style.width=pct+"%";pdone.textContent=done;ppct.textContent=pct+"%";
+    document.querySelectorAll("[data-phase]").forEach(updatePhase);
+    banner.classList.toggle("show",done===boxes.length&&boxes.length>0);
+  }
+
+  boxes.forEach(function(b){
+    b.addEventListener("change",function(){
+      b.closest(".step").classList.toggle("checked",b.checked);
+      save();updateAll();
+    });
+  });
+
+  // collapse / expand phases
+  document.querySelectorAll(".phase-head").forEach(function(h){
+    h.addEventListener("click",function(e){
+      if(e.target.classList.contains("cbox"))return;
+      h.closest(".phase").classList.toggle("collapsed");
+    });
+  });
+
+  document.getElementById("resetBtn").addEventListener("click",function(){
+    boxes.forEach(function(b){b.checked=false;b.closest(".step").classList.remove("checked")});
+    try{localStorage.removeItem(KEY)}catch(e){}
+    updateAll();
+  });
+
+  load();updateAll();
+})();
+</script>
